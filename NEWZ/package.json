@@ -1,0 +1,21 @@
+{
+  "name": "news-today",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "node tests/quality.mjs",
+    "screenshots": "node tests/screenshots.mjs",
+    "browser-check": "node tests/browser-quality.mjs",
+    "lighthouse": "node tests/lighthouse.mjs"
+  },
+  "dependencies": {
+    "astro": "^5.14.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}

@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getArticle, categories } from '../../../data';
+import type { Language } from '../../../types';
+export function getStaticPaths() { return ['en','hi'].flatMap((lang) => ['verify-local-story','verify-bihar-report'].map((slug) => ({ params: { lang, slug } }))); }
+const lang = Astro.params.lang as Language; const article = getArticle(lang, Astro.params.slug!); if (!article) throw new Error('Article not found'); const category = categories.find((item) => item.slug === article.category)!;
+---
+<BaseLayout title={article.title} description={article.dek} lang={lang} article={true} articleData={article} noindex canonical={`https://newstoday.example/${lang}/article/${article.slug}/`}>
+  <article class="article"><div class="breadcrumbs"><a href={`/${lang}/`}>{lang === 'hi' ? 'होम' : 'Home'}</a> / <a href={`/${lang}/category/${article.category}/`}>{lang === 'hi' ? category.hi : category.en}</a></div><div class="eyebrow">{lang === 'hi' ? category.hi : category.en}</div><h1>{article.title}</h1><p class="dek">{article.dek}</p><p class="meta">{article.byline} · {article.dateline} · <time datetime={article.publishedAt}>{article.publishedAt.slice(0,10)}</time></p><div class="notice">{lang === 'hi' ? 'TODO_VERIFY: स्रोत, तिथि और संपादकीय समीक्षा लंबित है। यह सत्यापित समाचार रिपोर्ट नहीं है।' : 'TODO_VERIFY: Source, date and editorial review are pending. This page is not a verified news report.'}</div><img class="lead-image" src="/images/news-placeholder.svg" width="820" height="460" alt={article.alt} /><div class="article-body">{article.body.map((paragraph) => <p>{paragraph}</p>)}</div><div class="source"><strong>{lang === 'hi' ? 'स्रोत' : 'Source'}:</strong> <a href={article.sourceUrl} rel="nofollow">{article.sourceName}</a></div></article>
+</BaseLayout>

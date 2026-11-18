@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://newstoday.example/sitemap-index.xml

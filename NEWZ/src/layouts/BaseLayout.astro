@@ -1,0 +1,48 @@
+---
+import '../styles/global.css';
+import { languages, categories } from '../data';
+import type { Language } from '../types';
+const { title, description, lang = 'en', canonical = '', article = false, articleData, noindex = false } = Astro.props;
+const hi = lang === 'hi';
+const labels = hi ? { home: 'होम', switch: 'भाषा बदलें', menu: 'मुख्य मेन्यू', checkout: 'सदस्यता', tagline: 'स्थानीय खबरें, स्पष्ट भाषा में।', footer: 'भागलपुर और बिहार के लिए स्रोत-सही खबरें।', date: '17 नवंबर 2026' } : { home: 'Home', switch: 'Change language', menu: 'Main menu', checkout: 'Checkout', tagline: 'Local news, clearly told.', footer: 'Source-first reporting for Bhagalpur and Bihar.', date: '17 November 2026' };
+const baseUrl = String(Astro.site ?? 'https://newstoday.example').replace(/\/$/, '');
+const alternate = (code: Language) => `${baseUrl}/${code}/`;
+const jsonLd = [
+  { '@context': 'https://schema.org', '@type': 'Organization', name: 'News Today', url: baseUrl, logo: `${baseUrl}/images/news-placeholder.svg` },
+  { '@context': 'https://schema.org', '@type': 'LocalBusiness', name: 'News Today Bhagalpur', url: baseUrl, areaServed: 'Bhagalpur, Bihar', address: { '@type': 'PostalAddress', addressLocality: 'Bhagalpur', addressRegion: 'Bihar', addressCountry: 'IN' } },
+  { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: hi ? 'होम' : 'Home', item: `${baseUrl}/${lang}/` }] },
+  ...(articleData ? [{ '@context': 'https://schema.org', '@type': 'NewsArticle', headline: articleData.title, description: articleData.dek, datePublished: articleData.publishedAt, dateModified: articleData.modifiedAt, author: { '@type': 'Person', name: articleData.byline }, publisher: { '@type': 'Organization', name: 'News Today' }, image: `${baseUrl}${articleData.image}`, mainEntityOfPage: canonical }] : [])
+];
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical || `${baseUrl}/${lang}/`} />
+    {languages.map((item) => <link rel="alternate" hreflang={item.code} href={alternate(item.code)} />)}
+    <link rel="alternate" hreflang="x-default" href={`${baseUrl}/en/`} />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    <meta property="og:title" content={title} /><meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical || `${baseUrl}/${lang}/`} /><meta property="og:site_name" content="News Today" />
+    <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={description} />
+    {noindex && <meta name="robots" content="noindex,follow" />}
+    {jsonLd.map((schema) => <script type="application/ld+json" set:html={JSON.stringify(schema)} />)}
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip" href="#content">{lang === 'hi' ? 'मुख्य सामग्री पर जाएं' : 'Skip to content'}</a>
+    <div class="utility"><div class="wrap"><span>Bhagalpur · Bihar</span><time datetime="2026-11-17">{labels.date}</time></div></div>
+    <header>
+      <div class="masthead"><div class="wrap"><a class="brand" href={`/${lang}/`}>News <span>Today</span></a><span class="tagline">{labels.tagline}</span><div class="switcher" aria-expanded="false"><button type="button" aria-label={labels.switch} aria-haspopup="true">EN / HI</button><ul>{languages.map((item) => <li><a href={`/${item.code}/`} lang={item.code}>{item.code === 'hi' && !hi ? 'Hindi' : item.nativeName}</a></li>)}</ul></div></div></div>
+      <nav class="nav" aria-label={labels.menu}><div class="wrap"><a href={`/${lang}/`}>{labels.home}</a>{categories.map((category) => <a href={`/${lang}/category/${category.slug}/`}>{lang === 'hi' ? category.hi : category.en}</a>)}<a href={`/${lang}/checkout/`}>{labels.checkout}</a></div></nav>
+    </header>
+    <main id="content" class="wrap"><slot /></main>
+    <footer class="footer"><div class="wrap"><div><strong>News Today</strong><br /><small>{labels.footer}</small></div><div class="switcher" aria-expanded="false"><button type="button" aria-label={labels.switch}>EN / HI</button><ul>{languages.map((item) => <li><a href={`/${item.code}/`} lang={item.code}>{item.code === 'hi' && !hi ? 'Hindi' : item.nativeName}</a></li>)}</ul></div></div></footer>
+    <script defer is:inline>
+      const switches = document.querySelectorAll('.switcher');
+      switches.forEach((root) => { const button = root.querySelector('button'); button?.addEventListener('click', () => root.setAttribute('aria-expanded', root.getAttribute('aria-expanded') !== 'true' ? 'true' : 'false')); root.querySelectorAll('a[lang]').forEach((link) => link.addEventListener('click', () => { try { localStorage.setItem('news-today-language', link.getAttribute('lang')); document.cookie = `news-today-language=${link.getAttribute('lang')}; Max-Age=31536000; Path=/; SameSite=Lax`; } catch {} })); document.addEventListener('keydown', (event) => { if (event.key === 'Escape') root.setAttribute('aria-expanded', 'false'); }); });
+    </script>
+  </body>
+</html>

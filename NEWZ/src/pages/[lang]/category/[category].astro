@@ -1,0 +1,10 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { categories, getArticles } from '../../../data';
+import type { Language, CategorySlug } from '../../../types';
+export function getStaticPaths() { return ['en','hi'].flatMap((lang) => categories.map((category) => ({ params: { lang, category: category.slug } }))); }
+const lang = Astro.params.lang as Language; const category = categories.find((item) => item.slug === Astro.params.category) ?? categories.at(-1)!; const stories = getArticles(lang).filter((story) => story.category === category.slug); const title = lang === 'hi' ? `${category.hi} | न्यूज़ टुडे` : `${category.en} | News Today`; const description = lang === 'hi' ? category.hiDescription : category.description;
+---
+<BaseLayout title={title} description={description} lang={lang} noindex canonical={`https://newstoday.example/${lang}/category/${category.slug}/`}>
+  <div class="eyebrow">{lang === 'hi' ? 'खंड' : 'Section'}</div><h1>{lang === 'hi' ? category.hi : category.en}</h1><p class="dek">{description}</p><div class="grid">{(stories.length ? stories : getArticles(lang).slice(0,1)).map((story) => <article class="story-card"><h2><a href={`/${lang}/article/${story.slug}/`}>{story.title}</a></h2><p>{story.dek}</p><div class="meta">{story.dateline} · {story.sourceName}</div></article>)}</div>
+</BaseLayout>

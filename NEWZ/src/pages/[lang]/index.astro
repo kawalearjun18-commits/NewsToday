@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getArticles, categories } from '../../data';
+import type { Language } from '../../types';
+export function getStaticPaths() { return [{ params: { lang: 'en' } }, { params: { lang: 'hi' } }]; }
+const lang = Astro.params.lang as Language; const stories = getArticles(lang); const labels = lang === 'hi' ? { title:'भागलपुर और बिहार समाचार | न्यूज़ टुडे', desc:'भागलपुर और बिहार की स्रोत-सही खबरें।', latest:'ताज़ा खबरें', local:'स्थानीय फोकस', read:'पूरी खबर पढ़ें' } : { title:'Bhagalpur and Bihar news | News Today', desc:'Source-first news from Bhagalpur and Bihar.', latest:'Latest news', local:'Local focus', read:'Read the full story' };
+---
+<BaseLayout title={labels.title} description={labels.desc} lang={lang} noindex canonical={`https://newstoday.example/${lang}/`}>
+  <section class="hero"><div class="hero-card"><div class="eyebrow">{labels.local}</div><h1>{stories[0].title}</h1><p>{stories[0].dek}</p><div class="notice">{lang === 'hi' ? 'TODO_VERIFY: प्रकाशन से पहले स्रोत की पुष्टि लंबित है।' : 'TODO_VERIFY: This story is awaiting source confirmation before publication.'}</div><a class="button" href={`/${lang}/article/${stories[0].slug}/`}>{labels.read}</a></div><div class="hero-card"><img class="lead-image" src="/images/news-placeholder.svg" width="640" height="420" alt={stories[0].alt} loading="eager" /></div></section>
+  <section class="section"><div class="section-head"><h2>{labels.latest}</h2><a href={`/${lang}/category/others/`}>{lang === 'hi' ? 'सभी देखें' : 'View all'}</a></div><div class="grid">{stories.map((story) => <article class="story-card"><div class="eyebrow">{categories.find((c) => c.slug === story.category)?.[lang === 'hi' ? 'hi' : 'en']}</div><h3><a href={`/${lang}/article/${story.slug}/`}>{story.title}</a></h3><p>{story.dek}</p><div class="meta">{story.dateline} · {story.sourceName}</div></article>)}</div></section>
+</BaseLayout>

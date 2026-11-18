@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Language } from '../../types';
+export function getStaticPaths() { return [{ params: { lang:'en' } }, { params: { lang:'hi' } }]; }
+const lang = Astro.params.lang as Language; const hi = lang === 'hi';
+---
+<BaseLayout title={hi ? 'सदस्यता | न्यूज़ टुडे' : 'Checkout | News Today'} description={hi ? 'न्यूज़ टुडे सदस्यता का पूर्वावलोकन।' : 'News Today subscription checkout preview.'} lang={lang} canonical={`https://newstoday.example/${lang}/checkout/`}>
+  <div class="checkout"><section><div class="eyebrow">{hi ? 'सदस्यता' : 'Subscription'}</div><h1>{hi ? 'स्थानीय खबरों का समर्थन करें' : 'Support local reporting'}</h1><p class="dek">{hi ? 'यह एक सुरक्षित चेकआउट पूर्वावलोकन है। भुगतान अभी कॉन्फ़िगर नहीं है।' : 'This is a secure checkout preview. Payment processing is not configured.'}</p></section><form class="checkout-card" action="/api/checkout" method="post"><h2>{hi ? 'आपका विवरण' : 'Your details'}</h2><label for="email">{hi ? 'ईमेल' : 'Email'}</label><input id="email" name="email" type="email" autocomplete="email" required /><label for="name">{hi ? 'नाम' : 'Name'}</label><input id="name" name="name" autocomplete="name" required /><button class="button" type="submit">{hi ? 'जारी रखें' : 'Continue'}</button><p class="meta">{hi ? 'भुगतान प्रदाता लंबित है।' : 'Payment provider pending human configuration.'}</p></form></div>
+</BaseLayout>
