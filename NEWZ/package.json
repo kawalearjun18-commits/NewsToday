@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "test": "node tests/quality.mjs",
+    "test": "node tests/quality.mjs && node tests/detect.mjs",
     "screenshots": "node tests/screenshots.mjs",
     "browser-check": "node tests/browser-quality.mjs",
     "lighthouse": "node tests/lighthouse.mjs"
