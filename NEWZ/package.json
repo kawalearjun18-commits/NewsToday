@@ -10,6 +10,7 @@
     "test": "node tests/quality.mjs && node tests/detect.mjs",
     "screenshots": "node tests/screenshots.mjs",
     "browser-check": "node tests/browser-quality.mjs",
+    "lighthouse:run": "node tests/lighthouse-run.mjs",
     "lighthouse": "node tests/lighthouse.mjs"
   },
   "dependencies": {
